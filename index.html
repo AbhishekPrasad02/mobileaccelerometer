@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gyroscope Data with Chart</title>
+    <title>Accelerometer Data with Chart</title>
     <style>
         .data-container {
             width: 80%;
@@ -24,20 +24,20 @@
 <body>
 
 <div class="data-container">
-    <h3>Gyroscope Data:</h3>
+    <h3>Accelerometer Data:</h3>
 
     <!-- Display values separately -->
-    <p><strong>X-axis (angular velocity):</strong> <span id="gyroXVal">N/A</span></p>
-    <p><strong>Y-axis (angular velocity):</strong> <span id="gyroYVal">N/A</span></p>
-    <p><strong>Z-axis (angular velocity):</strong> <span id="gyroZVal">N/A</span></p>
+    <p><strong>X-axis:</strong> <span id="accelXVal">N/A</span></p>
+    <p><strong>Y-axis:</strong> <span id="accelYVal">N/A</span></p>
+    <p><strong>Z-axis:</strong> <span id="accelZVal">N/A</span></p>
 
     <!-- Canvas for rendering the chart -->
-    <canvas id="gyroChart"></canvas>
+    <canvas id="accelChart"></canvas>
 </div>
 
 <script>
     // Chart setup
-    const ctx = document.getElementById('gyroChart').getContext('2d');
+    const ctx = document.getElementById('accelChart').getContext('2d');
     const data = {
         datasets: [{
             label: 'X-axis',
@@ -70,37 +70,37 @@
                     type: 'realtime',
                     realtime: {
                         duration: 90000,
-                        delay: 500
+                        delay: 200 // Adjust the delay accordingly if needed
                     }
                 }
             }
         }
     };
-    const gyroChart = new Chart(ctx, config);
+    const accelChart = new Chart(ctx, config);
 
-    if (typeof Gyroscope === "function") {
-        const gyro = new Gyroscope({ frequency: 60 });
+    if (typeof Accelerometer === "function") {
+        const accel = new Accelerometer({ frequency: 5 }); // 5 samples per second
         
-        gyro.addEventListener("reading", () => {
+        accel.addEventListener("reading", () => {
             // Update the displayed values
-            document.getElementById('gyroXVal').textContent = gyro.x.toFixed(2);
-            document.getElementById('gyroYVal').textContent = gyro.y.toFixed(2);
-            document.getElementById('gyroZVal').textContent = gyro.z.toFixed(2);
+            document.getElementById('accelXVal').textContent = accel.x.toFixed(2);
+            document.getElementById('accelYVal').textContent = accel.y.toFixed(2);
+            document.getElementById('accelZVal').textContent = accel.z.toFixed(2);
             
             // Add data to the chart
-            gyroChart.data.datasets[0].data.push({x: Date.now(), y: gyro.x.toFixed(2)});
-            gyroChart.data.datasets[1].data.push({x: Date.now(), y: gyro.y.toFixed(2)});
-            gyroChart.data.datasets[2].data.push({x: Date.now(), y: gyro.z.toFixed(2)});
+            accelChart.data.datasets[0].data.push({x: Date.now(), y: accel.x.toFixed(2)});
+            accelChart.data.datasets[1].data.push({x: Date.now(), y: accel.y.toFixed(2)});
+            accelChart.data.datasets[2].data.push({x: Date.now(), y: accel.z.toFixed(2)});
             
             // Update the chart
-            gyroChart.update({
+            accelChart.update({
                 preservation: true
             });
         });
         
-        gyro.start();
+        accel.start();
     } else {
-        alert('Sorry, your browser doesn\'t support the Gyroscope API.');
+        alert('Sorry, your browser doesn\'t support the Accelerometer API.');
     }
 </script>
 </body>
