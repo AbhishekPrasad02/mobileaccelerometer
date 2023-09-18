@@ -62,20 +62,29 @@
         }]
     };
     const config = {
-        type: 'line',
-        data: data,
-        options: {
-            scales: {
-                x: {
-                    type: 'realtime',
-                    realtime: {
-                        duration: 90000,
-                        delay: 200 // Adjust the delay accordingly if needed
-                    }
+    type: 'line',
+    data: data,
+    options: {
+        scales: {
+            x: {
+                type: 'realtime',
+                realtime: {
+                    duration: 3000, // 3 seconds of data
+                    refresh: 100,   // Adjust the refresh rate if needed A slight delay to smooth out chart updates
+                    pause: false,   // Ensures the chart does not pause
+                    ttl: undefined  // Data points are automatically removed after their time to live expires
                 }
             }
         }
-    };
+    }
+};
+
+
+
+
+
+
+
     const accelChart = new Chart(ctx, config);
 
     if (typeof Accelerometer === "function") {
