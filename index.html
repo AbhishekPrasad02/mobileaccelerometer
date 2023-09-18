@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accelerometer Data</title>
+</head>
+<body>
+
+<h3>Accelerometer Data:</h3>
+<p><strong>X:</strong> <span id="accelX">N/A</span></p>
+<p><strong>Y:</strong> <span id="accelY">N/A</span></p>
+<p><strong>Z:</strong> <span id="accelZ">N/A</span></p>
+
+<script>
+    // Check if DeviceMotionEvent is supported
+    if (window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', function(event) {
+            // Get the accelerometer data
+            var x = event.accelerationIncludingGravity.x;
+            var y = event.accelerationIncludingGravity.y;
+            var z = event.accelerationIncludingGravity.z;
+
+            // Update the HTML elements with the data
+            document.getElementById('accelX').textContent = x.toFixed(2);
+            document.getElementById('accelY').textContent = y.toFixed(2);
+            document.getElementById('accelZ').textContent = z.toFixed(2);
+        });
+    } else {
+        alert('Sorry, your browser doesnt support the DeviceMotionEvent API.');
+    }
+</script>
+</body>
+</html>
