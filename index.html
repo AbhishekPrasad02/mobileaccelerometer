@@ -10,9 +10,17 @@
             margin: 50px auto;
             text-align: center;
         }
+
+        canvas {
+            width: 100%;
+            height: 400px;
+        }
     </style>
-    <!-- Include Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Chart.js library and the streaming plugin -->
+   <!-- Use Chart.js v2.9.4 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+<!-- Use chartjs-plugin-streaming v1.9.0 -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.9.0"></script>
 </head>
 <body>
 
@@ -26,24 +34,23 @@
     // Chart setup
     const ctx = document.getElementById('gyroChart').getContext('2d');
     const data = {
-        labels: [],  // will be filled with timestamps
         datasets: [{
             label: 'X-axis',
-            data: [],  // will be filled with gyro.x data
+            data: [],
             borderColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 1,
             fill: false
         },
         {
             label: 'Y-axis',
-            data: [],  // will be filled with gyro.y data
+            data: [],
             borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 1,
             fill: false
         },
         {
             label: 'Z-axis',
-            data: [],  // will be filled with gyro.z data
+            data: [],
             borderColor: 'rgba(75, 192, 192, 1)',
             borderWidth: 1,
             fill: false
@@ -57,7 +64,7 @@
                 x: {
                     type: 'realtime',
                     realtime: {
-                        duration: 90000,  // show last 90 seconds of data
+                        duration: 90000, 
                         delay: 500
                     }
                 }
@@ -71,11 +78,9 @@
         
         gyro.addEventListener("reading", () => {
             // Add data
-            const now = new Date();
-            gyroChart.data.labels.push(now);
-            gyroChart.data.datasets[0].data.push(gyro.x.toFixed(2));
-            gyroChart.data.datasets[1].data.push(gyro.y.toFixed(2));
-            gyroChart.data.datasets[2].data.push(gyro.z.toFixed(2));
+            gyroChart.data.datasets[0].data.push({x: Date.now(), y: gyro.x.toFixed(2)});
+            gyroChart.data.datasets[1].data.push({x: Date.now(), y: gyro.y.toFixed(2)});
+            gyroChart.data.datasets[2].data.push({x: Date.now(), y: gyro.z.toFixed(2)});
             
             // Update the chart
             gyroChart.update({
