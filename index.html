@@ -3,31 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accelerometer Data</title>
+    <title>Gyroscope Data with Chart</title>
+    <style>
+        .data-container {
+            width: 80%;
+            margin: 50px auto;
+            text-align: center;
+        }
+    </style>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<h3>Accelerometer Data:</h3>
-<p><strong>X:</strong> <span id="accelX">N/A</span></p>
-<p><strong>Y:</strong> <span id="accelY">N/A</span></p>
-<p><strong>Z:</strong> <span id="accelZ">N/A</span></p>
+<div class="data-container">
+    <h3>Gyroscope Data:</h3>
+    <!-- Canvas for rendering the chart -->
+    <canvas id="gyroChart"></canvas>
+</div>
 
 <script>
-    // Check if DeviceMotionEvent is supported
-    if (window.DeviceMotionEvent) {
-        window.addEventListener('devicemotion', function(event) {
-            // Get the accelerometer data
-            var x = event.accelerationIncludingGravity.x;
-            var y = event.accelerationIncludingGravity.y;
-            var z = event.accelerationIncludingGravity.z;
+    // Chart setup
+    const ctx = document.getElementById('gyroChart').getContext('2d');
+    const data = {
+        labels: [],  // will be filled with timestamps
+        datasets: [{
+            label: 'X-axis',
+            data: [],  // will be filled with gyro.x data
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+            fill: false
+        },
+        {
+            label: 'Y-axis',
+            data: [],  // will be filled with gyro.y data
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+            fill: false
+        },
+        {
+            label: 'Z-axis',
+            data: [],  // will be filled with gyro.z data
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            fill: false
+        }]
+    };
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            scales: {
+                x: {
+                    type: 'realtime',
+                    realtime: {
+                        duration: 90000,  // show last 90 seconds of data
+                        delay: 500
+                    }
+                }
+            }
+        }
+    };
+    const gyroChart = new Chart(ctx, config);
 
-            // Update the HTML elements with the data
-            document.getElementById('accelX').textContent = x.toFixed(2);
-            document.getElementById('accelY').textContent = y.toFixed(2);
-            document.getElementById('accelZ').textContent = z.toFixed(2);
+    if (typeof Gyroscope === "function") {
+        const gyro = new Gyroscope({ frequency: 60 });
+        
+        gyro.addEventListener("reading", () => {
+            // Add data
+            const now = new Date();
+            gyroChart.data.labels.push(now);
+            gyroChart.data.datasets[0].data.push(gyro.x.toFixed(2));
+            gyroChart.data.datasets[1].data.push(gyro.y.toFixed(2));
+            gyroChart.data.datasets[2].data.push(gyro.z.toFixed(2));
+            
+            // Update the chart
+            gyroChart.update({
+                preservation: true
+            });
         });
+        
+        gyro.start();
     } else {
-        alert('Sorry, your browser doesnt support the DeviceMotionEvent API.');
+        alert('Sorry, your browser doesn\'t support the Gyroscope API.');
     }
 </script>
 </body>
